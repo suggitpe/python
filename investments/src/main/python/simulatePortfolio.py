@@ -81,4 +81,4 @@ def proveAlgorythmWithKnownValuesTest():
 	print "Average Daily Return: ", averageReturn
 	print "Cumulative Daily Return: ", cumulativeReturn
 
-proveAlgorythmWithKnownValuesTest()
+#proveAlgorythmWithKnownValuesTest()
