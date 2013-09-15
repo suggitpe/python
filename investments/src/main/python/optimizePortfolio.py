@@ -34,7 +34,8 @@ def convertIntegerAllocationsToFloats(combinationsAsInts):
 def testBestAllocation():
 	start = dt.datetime(2011, 1, 1)
 	end = dt.datetime(2011, 12, 31)
-	stocks = ['AAPL', 'GLD', 'GOOG', 'XOM']
+	stocks = ['C', 'GS', 'IBM', 'HNZ']
+	#stocks = ['AAPL', 'GOOG', 'IBM', 'MKSF']
 	allocation = optimise(start, end, stocks)
 
 	volatility, averageReturn, sharpeRatio, cumulativeReturn = sim.simulate(start, end, stocks, allocation)
