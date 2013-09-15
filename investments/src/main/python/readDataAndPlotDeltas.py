@@ -16,7 +16,9 @@ def readDataAndPlotDeltas():
 
 def readDataAndPlotDeltasFor(stockSymbols, startOfPeriod, endOfPeriod):
     daysOfMarketOpen = getNyseDaysOfMarketOpenBetween(startOfPeriod, endOfPeriod)
-    plotMarketDataFor(stockSymbols, daysOfMarketOpen, getMarketCloseDataFor(stockSymbols, daysOfMarketOpen))
+    dataDictionaryOfCloseMarketData = getMarketCloseDataFor(stockSymbols, daysOfMarketOpen)
+    normalisedCloseData = normalisePrices(dataDictionaryOfCloseMarketData)
+    plotMarketDataFor(stockSymbols, daysOfMarketOpen, normalisedCloseData)
 
 def getNyseDaysOfMarketOpenBetween(startOfPeriod, endOfPeriod):
    	timeOfDay = dt.timedelta(hours=16)
@@ -32,9 +34,9 @@ def getMarketCloseDataFor(aListOfSymbols, daysOfMarketOpen):
 def createMarketKeys():
 	return ['open', 'high', 'low', 'close', 'volume', 'actual_close']
 
-def plotMarketDataFor(stockSymbols, daysOfMarketOpen, closingData):
+def plotMarketDataFor(stockSymbols, daysOfMarketOpen, normalisedCloseData):
     plt.clf()
-    plt.plot(daysOfMarketOpen, normalisePrices(closingData))
+    plt.plot(daysOfMarketOpen, normalisedCloseData)
     plt.legend(stockSymbols)
     plt.ylabel('Adjusted Close')
     plt.xlabel('Date')
