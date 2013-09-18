@@ -51,15 +51,6 @@ def createMarketKeys():
 	#return ['open', 'high', 'low', 'close', 'volume', 'actual_close']
 	return ['close']
 
-def plotMarketDataFor(stockSymbols, daysOfMarketOpen, normalisedCloseData):
-    plt.clf()
-    plt.plot(daysOfMarketOpen, normalisedCloseData)
-    plt.legend(stockSymbols)
-    plt.ylabel('Adjusted Close')
-    plt.xlabel('Date')
-    plt.savefig('foo.pdf', format='pdf')
-    print("PDF chart created")
-
 def normalisePrices(closingData):
     dataAsArray = closingData.values
     return dataAsArray / dataAsArray[0,:]
@@ -81,4 +72,13 @@ def proveAlgorythmWithKnownValuesTest():
 	print "Average Daily Return: ", averageReturn
 	print "Cumulative Daily Return: ", cumulativeReturn
 
-#proveAlgorythmWithKnownValuesTest()
+def plotMarketDataFor(stockSymbols, daysOfMarketOpen, normalisedCloseData):
+    plt.clf()
+    plt.plot(daysOfMarketOpen, normalisedCloseData)
+    plt.legend(stockSymbols)
+    plt.ylabel('Adjusted Close')
+    plt.xlabel('Date')
+    plt.savefig('foo.pdf', format='pdf')
+    print("PDF chart created")
+
+proveAlgorythmWithKnownValuesTest()

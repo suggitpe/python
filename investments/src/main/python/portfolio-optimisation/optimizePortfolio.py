@@ -12,7 +12,6 @@ def optimise(start, end, stocks):
 		if sharpeRatio > bestSharp:
 			bestSharp = sharpeRatio
 			bestAllocation = allocation
-			print allocation, "gives a highest sharp ratio of ", sharpeRatio
 	return bestAllocation
 
 def getAllocationCombinationsForFourStocks():
@@ -31,15 +30,10 @@ def convertIntegerAllocationsToFloats(combinationsAsInts):
 		floatCombinations.append([integerDigit/10.0 for integerDigit in allocations])
 	return floatCombinations
 
-def testBestAllocation():
-	start = dt.datetime(2011, 1, 1)
-	end = dt.datetime(2011, 12, 31)
-	stocks = ['C', 'GS', 'IBM', 'HNZ']
-	#stocks = ['AAPL', 'GOOG', 'IBM', 'MKSF']
-	allocation = optimise(start, end, stocks)
-
+def detailAllocation( start, end, stocks, allocation):
 	volatility, averageReturn, sharpeRatio, cumulativeReturn = sim.simulate(start, end, stocks, allocation)
 
+	print "###################################"
 	print "Start Date: ", start
 	print "End Date: ", end
 	print "Stock symbols: ", stocks
@@ -48,5 +42,14 @@ def testBestAllocation():
 	print "Volatility (STD): ", volatility
 	print "Average Daily Return: ", averageReturn
 	print "Cumulative Daily Return: ", cumulativeReturn
+	print "###################################"
 
-testBestAllocation()
+def main():
+	start = dt.datetime(2011, 1, 1)
+	end = dt.datetime(2011, 12, 31)
+	stocks = ['C', 'GS', 'IBM', 'HNZ']
+	#stocks = ['AAPL', 'GOOG', 'IBM', 'MKSF']
+	detailAllocation(start, end, stocks, optimise(start, end, stocks))
+
+main()
+
