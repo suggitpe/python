@@ -12,22 +12,29 @@ import QSTK.qstkstudy.EventProfiler as ep
 
 
 
-def getDataFromMarket(startOfPeriod, endOfPeriod):
+def getDataFromMarket(startOfPeriod, endOfPeriod, symbolsFrom):
 	daysOfMarketOpen = du.getNYSEdays(startOfPeriod, endOfPeriod, dt.timedelta(hours=16))
 	dataObject = da.DataAccess('Yahoo')
-	symbols = dataObject.get_symbols_from_list('sp5002012')
+	symbols = dataObject.get_symbols_from_list(symbolsFrom)
 	symbols.append('SPY')
 	keys = createMarketKeys()
 	rawMarketData = dataObject.get_data(daysOfMarketOpen, symbols, keys)
 	dataDictionary = dict(zip(keys, rawMarketData))
+	cleanDictionaryOfNans(keys, dataDictionary)
 	return [symbols, dataDictionary]
 
 def createMarketKeys():
 	return ['open', 'high', 'low', 'close', 'volume', 'actual_close']
 	#return ['actual_close']
 
-def findEventsFrom( symbols, dataDictionary):
-	closeData = dataDictionary['close']
+def cleanDictionaryOfNans(keys, dataDictionary):
+	for key in keys:
+		dataDictionary[key] = dataDictionary[key].fillna(method='ffill')
+		dataDictionary[key] = dataDictionary[key].fillna(method='bfill')
+		dataDictionary[key] = dataDictionary[key].fillna(1.0)
+
+def findEventsFrom( symbols, dataDictionary, eventTrigger):
+	closeData = dataDictionary['actual_close']
 	theMarket = closeData['SPY']
 	events = createDataFrameSameSizeAs(closeData)
 	timestamps = closeData.index
@@ -42,7 +49,7 @@ def findEventsFrom( symbols, dataDictionary):
 			symbolReturnToday = (symbolPriceToday / symbolPriceYesterday) -1
 			marketReturnToday = (marketPriceToday / marketPriceYesterday) -1
 
-			if symbolReturnToday <= -0.03 and marketReturnToday >= 0.02:
+			if symbolPriceYesterday >= eventTrigger and symbolPriceToday < eventTrigger:
 				events[symbol].ix[timestamps[day]] = 1
 
 	return events
@@ -61,8 +68,10 @@ def createTheEventProfileFrom(events, dataDictionary):
 def profilePeriod():
 	startOfPeriod = dt.datetime(2008, 1, 1)
 	endOfPeriod = dt.datetime(2009, 12, 31)
-	symbols, dataDictionary = getDataFromMarket(startOfPeriod, endOfPeriod)
-	events = findEventsFrom(symbols, dataDictionary)
+	symbolsFrom = 'sp5002012'
+	eventTrigger = 6.0
+	symbols, dataDictionary = getDataFromMarket(startOfPeriod, endOfPeriod, symbolsFrom)
+	events = findEventsFrom(symbols, dataDictionary, eventTrigger)
 	createTheEventProfileFrom(events, dataDictionary)
 
 profilePeriod()
