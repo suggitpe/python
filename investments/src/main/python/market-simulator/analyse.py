@@ -58,6 +58,7 @@ def readOrdersFromInputFile(inputValuesFile):
 	return data
 	
 def outputStatisticsFor(fundData, benchmark):
+	print len(fundData)
 	startDate = fundData.index[0]
 	endDate = fundData.index[-1]
 
