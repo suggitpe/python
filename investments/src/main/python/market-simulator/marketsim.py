@@ -132,5 +132,6 @@ def updateChangeOrderDataIntoCucultiveTotals(emptyDataframe, symbols):
 				emptyDataframe[symbol].ix[days[day]] = currentDayNumber + yesterdayDayNumber
 
 
-simulateMarket(1000000, "orders.csv", "values.csv")
-simulateMarket(1000000, "orders2.csv", "values2.csv")
+#simulateMarket(1000000, "orders.csv", "values.csv")
+#simulateMarket(1000000, "orders2.csv", "values2.csv")
+#simulateMarket(1000000, "orders3.csv", "values3.csv")

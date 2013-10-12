@@ -102,5 +102,6 @@ def createDataFrameFrom(data):
 def createDateFrom(tuple):
 	return dt.datetime(tuple['Year'], tuple['Month'], tuple['Day'])
 
-analyse('values.csv', '$SPX')
-# analyse('values2.csv', '$SPX')
+#analyse('values.csv', '$SPX')
+#analyse('values2.csv', '$SPX')
+analyse('values4.csv', '$SPX')
