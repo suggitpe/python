@@ -1,86 +1,89 @@
 #!/usr/bin/env python
 
-import pandas as pd
-import numpy as np
-import math
-import copy
-import QSTK.qstkutil.qsdateutil as du
-import datetime as dt
-import QSTK.qstkutil.DataAccess as da
-import QSTK.qstkutil.tsutil as tsu
-import QSTK.qstkstudy.EventProfiler as ep
 import csv
+import datetime as dt
+
+import QSTK.qstkutil.DataAccess as da
+import QSTK.qstkutil.qsdateutil as du
 
 
-def getDataFromMarket(startOfPeriod, endOfPeriod, symbolsFrom):
-	print "Getting data"
-	daysOfMarketOpen = du.getNYSEdays(startOfPeriod, endOfPeriod, dt.timedelta(hours=16))
-	dataObject = da.DataAccess('Yahoo')
-	symbols = dataObject.get_symbols_from_list(symbolsFrom)
-	symbols.append('SPY')
-	keys = createMarketKeys()
-	rawMarketData = dataObject.get_data(daysOfMarketOpen, symbols, keys)
-	dataDictionary = dict(zip(keys, rawMarketData))
-	cleanDictionaryOfNans(keys, dataDictionary)
-	return [symbols, dataDictionary]
-
-def createMarketKeys():
-	return ['open', 'high', 'low', 'close', 'volume', 'actual_close']
-	#return ['actual_close']
-
-def cleanDictionaryOfNans(keys, dataDictionary):
-	for key in keys:
-		dataDictionary[key] = dataDictionary[key].fillna(method='ffill')
-		dataDictionary[key] = dataDictionary[key].fillna(method='bfill')
-		dataDictionary[key] = dataDictionary[key].fillna(1.0)
-
-def createOrdersFrom( symbols, dataDictionary, eventTrigger):
-	closeData = dataDictionary['actual_close']
-	theMarket = closeData['SPY']
-	orders = []
-	timestamps = closeData.index
-
-	print "Finding events"
-	
-	for day in range(1, len(timestamps)):
-		for symbol in symbols:	
-			symbolPriceToday = closeData[symbol].ix[timestamps[day]]
-			marketPriceToday = theMarket.ix[timestamps[day]]
-			symbolPriceYesterday = closeData[symbol].ix[timestamps[day-1]]
-			marketPriceYesterday = theMarket.ix[timestamps[day-1]]
-			symbolReturnToday = (symbolPriceToday / symbolPriceYesterday) -1
-			marketReturnToday = (marketPriceToday / marketPriceYesterday) -1
-
-			if symbolPriceYesterday >= eventTrigger and symbolPriceToday < eventTrigger:
-				sellDate = timestamps[day+5]
-				if(day+5 > len(timestamps)):
-					sellDate = timestamps[-1]
-
-				orders.append(createOrderFor(symbol, timestamps[day], 'Buy'))
-				orders.append(createOrderFor(symbol, sellDate, 'Sell'))
-
-	return orders
-
-def createOrderFor(symbol, date, direction):
-	return [date.year, date.month, date.day, symbol, direction, 100]
-
-def writeOrdersToCsv(orders):
-	print "Writing orders to CSV"
-	with open('orders.csv', 'wb') as csvfile:
-		writer = csv.writer(csvfile, delimiter=',') 
-		for order in orders:
-			writer.writerow(order)
+def get_data_from_market(start_of_period, end_of_period, symbols_from):
+    print "Getting data"
+    days_of_market_open = du.getNYSEdays(start_of_period, end_of_period, dt.timedelta(hours=16))
+    data_object = da.DataAccess('Yahoo')
+    symbols = data_object.get_symbols_from_list(symbols_from)
+    symbols.append('SPY')
+    keys = create_market_keys()
+    raw_market_data = data_object.get_data(days_of_market_open, symbols, keys)
+    data_dictionary = dict(zip(keys, raw_market_data))
+    clean_dictionary_of_nans(keys, data_dictionary)
+    return [symbols, data_dictionary]
 
 
-def profilePeriod():
-	startOfPeriod = dt.datetime(2008, 1, 1)
-	endOfPeriod = dt.datetime(2009, 12, 31)
-	symbolsFrom = 'sp5002012'
-	eventTrigger = 8.0
-	symbols, dataDictionary = getDataFromMarket(startOfPeriod, endOfPeriod, symbolsFrom)
-	orders = createOrdersFrom(symbols, dataDictionary, eventTrigger)
-	writeOrdersToCsv(orders)
+def create_market_keys():
+    return ['open', 'high', 'low', 'close', 'volume', 'actual_close']
 
-	print "Orders created"
 
-profilePeriod()
+# return ['actual_close']
+
+
+def clean_dictionary_of_nans(keys, data_dictionary):
+    for key in keys:
+        data_dictionary[key] = data_dictionary[key].fillna(method='ffill')
+        data_dictionary[key] = data_dictionary[key].fillna(method='bfill')
+        data_dictionary[key] = data_dictionary[key].fillna(1.0)
+
+
+def create_orders_from(symbols, data_dictionary, event_trigger):
+    close_data = data_dictionary['actual_close']
+    # the_market = close_data['SPY']
+    orders = []
+    timestamps = close_data.index
+
+    print "Finding events"
+
+    for day in range(1, len(timestamps)):
+        for symbol in symbols:
+            symbol_price_today = close_data[symbol].ix[timestamps[day]]
+            market_price_today = the_market.ix[timestamps[day]]
+            symbol_price_yesterday = close_data[symbol].ix[timestamps[day - 1]]
+            market_price_yesterday = the_market.ix[timestamps[day - 1]]
+            symbol_return_today = (symbol_price_today / symbol_price_yesterday) - 1
+            market_return_today = (market_price_today / market_price_yesterday) - 1
+
+            if symbol_price_yesterday >= event_trigger and symbol_price_today < event_trigger:
+                sell_date = timestamps[day + 5]
+                if day + 5 > len(timestamps):
+                    sell_date = timestamps[-1]
+
+                orders.append(create_order_for(symbol, timestamps[day], 'Buy'))
+                orders.append(create_order_for(symbol, sell_date, 'Sell'))
+
+    return orders
+
+
+def create_order_for(symbol, date, direction):
+    return [date.year, date.month, date.day, symbol, direction, 100]
+
+
+def write_orders_to_csv(orders):
+    print "Writing orders to CSV"
+    with open('orders.csv', 'wb') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',')
+        for order in orders:
+            writer.writerow(order)
+
+
+def profile_period():
+    start_of_period = dt.datetime(2008, 1, 1)
+    end_of_period = dt.datetime(2009, 12, 31)
+    symbols_from = 'sp5002012'
+    event_trigger = 8.0
+    symbols, data_dictionary = get_data_from_market(start_of_period, end_of_period, symbols_from)
+    orders = create_orders_from(symbols, data_dictionary, event_trigger)
+    write_orders_to_csv(orders)
+
+    print "Orders created"
+
+
+profile_period()
