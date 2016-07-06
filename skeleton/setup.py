@@ -1,6 +1,8 @@
+#!/usr/bin/env python
+
 try:
     from setuptools import setup
-except: ImportError:
+except ImportError:
     from distutils.core import setup
 
 config = {
@@ -9,11 +11,12 @@ config = {
     'url': '',
     'download_url': '',
     'author_email': 'me@suggs.org.uk',
-    'version':, '0.0.1',
+    'version': '0.0.1',
     'install_requires': ['nose'],
     'packages': ['NAME'],
     'scripts': [],
-    'name', 'projectname'
+    'name': 'projectname'
 }
 
 setup(**config)
+
