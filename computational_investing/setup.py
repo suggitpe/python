@@ -6,19 +6,16 @@ except ImportError:
     from distutils.core import setup
 
 config = {
-    'description': 'My Project',
+    'description': 'Computational Investments, Part 1 (coursera)',
     'author': 'Peter Suggitt',
     'url': '',
     'download_url': '',
     'author_email': 'me@suggs.org.uk',
     'version': '0.0.1',
-    'packages': ['skeleton'],
+    'install_requires': ['nose'],
+    'packages': ['NAME'],
     'scripts': [],
-    'name': 'skeleton',
-    'install_requires': [
-        'nose'
-    ]
+    'name': 'Computational Investments'
 }
 
 setup(**config)
-

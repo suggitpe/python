@@ -1,5 +1,8 @@
 # Investments
 
+## Structure
+[Structure Definition](http://docs.python-guide.org/en/latest/writing/structure/)
+
 ## Common Metrics
  - Annual Return
     - (value[end]/value[start]) - 1
